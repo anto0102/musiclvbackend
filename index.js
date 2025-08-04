@@ -14,28 +14,29 @@ const manager = new Manager({
       secure: true,
     },
   ],
-  send: () => {}, // necessario per erela.js
+  send: () => {}, // richiesto da erela.js
 });
 
 manager.on("nodeConnect", node =>
-  console.log(`✅ Lavalink connesso: ${node.options.host}`)
+  console.log(`✅ Lavalink connesso a ${node.options.host}`)
 );
 
 manager.on("nodeError", (node, error) =>
-  console.error(`❌ Errore sul nodo ${node.options.host}: ${error.message}`)
+  console.error(`❌ Errore su ${node.options.host}: ${error.message}`)
 );
 
-manager.connect();
+// NON SERVE più manager.connect()
 
 app.get("/api/search", async (req, res) => {
   const query = req.query.q;
   if (!query) return res.status(400).send("Query mancante");
+
   try {
     const result = await manager.search(query);
     res.json({ tracks: result.tracks });
   } catch (err) {
     console.error("Errore nella ricerca:", err.message);
-    res.status(500).send("Errore nel server Lavalink");
+    res.status(500).send("Errore durante la ricerca");
   }
 });
 
