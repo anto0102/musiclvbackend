@@ -14,19 +14,8 @@ const manager = new Manager({
       password: "youshallnotpass",
       secure: false,
     },
-    {
-      host: "eu-lava.node.example",  // esempio, sostituisci con nodi pubblici reali
-      port: 80,
-      password: "youshallnotpass",
-      secure: false,
-    },
-    {
-      host: "us-lava.node.example",
-      port: 80,
-      password: "youshallnotpass",
-      secure: false,
-    }
   ],
+  clientId: "123456789012345678", // metti qui un valore stringa qualsiasi
   send: () => {},
 });
 
