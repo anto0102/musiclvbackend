@@ -4,42 +4,51 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Configura il manager di Lavalink
 const manager = new Manager({
   nodes: [
     {
-      host: "lava-v4.ajieblogs.eu.org",
+      host: "lava.link",
       port: 443,
-      password: "https://dsc.gg/ajidevserver",
+      password: "youshallnotpass",
       secure: true,
     },
   ],
-  // Se usi Discord bot, qui va il clientId (ma per player semplice puoi lasciare una stringa dummy)
-  clientId: "000000000000000000",
-  send: () => {}, // funzione vuota per ora, serve se usi Discord
+  clientId: "123456789012345678", // metti un tuo clientId o anche un numero stringa dummy
+  send(id, payload) {
+    // funzione vuota, serve per Discord ma qui può restare così
+  },
 });
 
-// Connect the Lavalink manager
+// Quando il manager è pronto
 manager.on("nodeConnect", node => {
-  console.log(`🔗 Nodo Lavalink connesso: ${node.options.host}`);
+  console.log(`Nodo connesso: ${node.options.identifier}`);
 });
 
 manager.on("nodeError", (node, error) => {
-  console.error(`❌ Errore nodo ${node.options.host}:`, error);
+  console.error(`Errore nodo ${node.options.identifier}:`, error);
 });
 
-manager.on("nodeDisconnect", node => {
-  console.warn(`⚠️ Nodo scollegato: ${node.options.host}`);
-});
+// Connetti al nodo
+manager.connect().catch(console.error);
 
-// Inizializza manager (connetti ai nodi)
-manager.init();
-
+// API base per test
 app.get("/", (req, res) => {
-  res.send("Backend Lavalink erela.js attivo!");
+  res.send("Backend Lavalink attivo!");
 });
 
-// Qui potresti aggiungere endpoint per fare search, play, ecc.
-// Per ora solo test endpoint base
+// Endpoint di ricerca esempio
+app.get("/search", async (req, res) => {
+  const query = req.query.q;
+  if (!query) return res.status(400).send("Query mancante");
+
+  try {
+    const results = await manager.search(query, "youtube");
+    res.json(results);
+  } catch (err) {
+    res.status(500).send("Errore ricerca: " + err.message);
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`🟢 Server backend attivo su http://localhost:${PORT}`);
