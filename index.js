@@ -9,13 +9,13 @@ app.use(express.json());
 const manager = new Manager({
   nodes: [
     {
-      host: "lava.link",
-      port: 80,
+      host: "nl1.lavalink.dev",
+      port: 2333,
       password: "youshallnotpass",
       secure: false,
     },
   ],
-  clientId: "123456789012345678", // metti qui un valore stringa qualsiasi
+  clientId: "123456789012345678", // dummy clientId
   send: () => {},
 });
 
