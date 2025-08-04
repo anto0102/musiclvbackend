@@ -4,28 +4,44 @@ const { Manager } = require("erela.js");
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const manager = new Manager({
   nodes: [
     {
-      host: "lava-v4.ajieblogs.eu.org",
-      port: 443,
-      password: "https://dsc.gg/ajidevserver",
-      secure: true,
+      host: "lava.link",
+      port: 80,
+      password: "youshallnotpass",
+      secure: false,
     },
+    {
+      host: "eu-lava.node.example",  // esempio, sostituisci con nodi pubblici reali
+      port: 80,
+      password: "youshallnotpass",
+      secure: false,
+    },
+    {
+      host: "us-lava.node.example",
+      port: 80,
+      password: "youshallnotpass",
+      secure: false,
+    }
   ],
-  send: () => {}, // richiesto da erela.js
+  send: () => {},
 });
 
-manager.on("nodeConnect", node =>
-  console.log(`✅ Lavalink connesso a ${node.options.host}`)
-);
+manager.on("nodeConnect", node => console.log(`✅ Connesso a ${node.options.host}`));
+manager.on("nodeError", (node, err) => console.error(`❌ Errore su ${node.options.host}:`, err));
 
-manager.on("nodeError", (node, error) =>
-  console.error(`❌ Errore su ${node.options.host}: ${error.message}`)
-);
+manager.on("ready", () => {
+  console.log("Manager pronto!");
+});
 
-// NON SERVE più manager.connect()
+manager.init();
+
+app.get("/", (req, res) => {
+  res.send("✅ Backend online");
+});
 
 app.get("/api/search", async (req, res) => {
   const query = req.query.q;
