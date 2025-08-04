@@ -1,49 +1,46 @@
-const express = require("express");
-const cors = require("cors");
 const { Manager } = require("erela.js");
+const express = require("express");
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 8080;
 
 const manager = new Manager({
   nodes: [
     {
-      host: "nl1.lavalink.dev",
-      port: 2333,
-      password: "youshallnotpass",
-      secure: false,
+      host: "lava-v4.ajieblogs.eu.org",
+      port: 443,
+      password: "https://dsc.gg/ajidevserver",
+      secure: true,
     },
   ],
-  clientId: "123456789012345678", // dummy clientId
-  send: () => {},
+  // Se usi Discord bot, qui va il clientId (ma per player semplice puoi lasciare una stringa dummy)
+  clientId: "000000000000000000",
+  send: () => {}, // funzione vuota per ora, serve se usi Discord
 });
 
-manager.on("nodeConnect", node => console.log(`✅ Connesso a ${node.options.host}`));
-manager.on("nodeError", (node, err) => console.error(`❌ Errore su ${node.options.host}:`, err));
-
-manager.on("ready", () => {
-  console.log("Manager pronto!");
+// Connect the Lavalink manager
+manager.on("nodeConnect", node => {
+  console.log(`🔗 Nodo Lavalink connesso: ${node.options.host}`);
 });
 
+manager.on("nodeError", (node, error) => {
+  console.error(`❌ Errore nodo ${node.options.host}:`, error);
+});
+
+manager.on("nodeDisconnect", node => {
+  console.warn(`⚠️ Nodo scollegato: ${node.options.host}`);
+});
+
+// Inizializza manager (connetti ai nodi)
 manager.init();
 
 app.get("/", (req, res) => {
-  res.send("✅ Backend online");
+  res.send("Backend Lavalink erela.js attivo!");
 });
 
-app.get("/api/search", async (req, res) => {
-  const query = req.query.q;
-  if (!query) return res.status(400).send("Query mancante");
+// Qui potresti aggiungere endpoint per fare search, play, ecc.
+// Per ora solo test endpoint base
 
-  try {
-    const result = await manager.search(query);
-    res.json({ tracks: result.tracks });
-  } catch (err) {
-    console.error("Errore nella ricerca:", err.message);
-    res.status(500).send("Errore durante la ricerca");
-  }
+app.listen(PORT, () => {
+  console.log(`🟢 Server backend attivo su http://localhost:${PORT}`);
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🟢 Server attivo su http://localhost:${PORT}`));
