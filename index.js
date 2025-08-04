@@ -4,40 +4,35 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Configura il manager di Lavalink
 const manager = new Manager({
   nodes: [
     {
-      host: "lava.link",
+      host: "lava-v3.ajieblogs.eu.org",
       port: 443,
-      password: "youshallnotpass",
+      password: "https://dsc.gg/ajidevserver",
       secure: true,
     },
   ],
-  clientId: "123456789012345678", // metti un tuo clientId o anche un numero stringa dummy
+  clientId: "123456789012345678", // Puoi mettere un ID qualsiasi come stringa
   send(id, payload) {
-    // funzione vuota, serve per Discord ma qui può restare così
+    // Funzione vuota, serve solo per Discord bot, qui lascia così
   },
 });
 
-// Quando il manager è pronto
-manager.on("nodeConnect", node => {
-  console.log(`Nodo connesso: ${node.options.identifier}`);
+manager.on("nodeConnect", (node) => {
+  console.log(`Nodo connesso: ${node.options.host}`);
 });
 
 manager.on("nodeError", (node, error) => {
-  console.error(`Errore nodo ${node.options.identifier}:`, error);
+  console.error(`Errore nodo ${node.options.host}:`, error);
 });
 
-// Connetti al nodo
 manager.connect().catch(console.error);
 
-// API base per test
 app.get("/", (req, res) => {
   res.send("Backend Lavalink attivo!");
 });
 
-// Endpoint di ricerca esempio
 app.get("/search", async (req, res) => {
   const query = req.query.q;
   if (!query) return res.status(400).send("Query mancante");
